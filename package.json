@@ -1,0 +1,25 @@
+{
+  "name": "devrant-webhooks-server",
+  "version": "1.0.0",
+  "description": "devRant-WebHooks Server written in Node.js",
+  "main": "server.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Skayo/devRant-Webhooks-Server.git"
+  },
+  "keywords": [
+    "nodejs",
+    "server",
+    "mysql",
+    "webhooks"
+  ],
+  "author": "Skayo",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/Skayo/devRant-Webhooks-Server/issues"
+  },
+  "homepage": "https://github.com/Skayo/devRant-Webhooks-Server#readme"
+}
