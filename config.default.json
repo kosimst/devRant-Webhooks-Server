@@ -8,5 +8,7 @@
 		"newRant": "*/30 * * * * *",
 		"newCommentOnRant": "0 * * * * *",
 		"newWeeklyRantTopic": "* 30 * * * *"
-	}
+	},
+
+	"consoleOutput": true
 }
