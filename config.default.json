@@ -1,0 +1,12 @@
+{
+	"host": "localhost",
+	"user": "root",
+	"password": "",
+	"database": "devrant-webhooks",
+
+	"cronjobTimes": {
+		"newRant": "*/30 * * * * *",
+		"newCommentOnRant": "0 * * * * *",
+		"newWeeklyRantTopic": "* 30 * * * *"
+	}
+}

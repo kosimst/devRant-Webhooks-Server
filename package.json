@@ -21,5 +21,11 @@
   "bugs": {
     "url": "https://github.com/Skayo/devRant-Webhooks-Server/issues"
   },
-  "homepage": "https://github.com/Skayo/devRant-Webhooks-Server#readme"
+  "homepage": "https://github.com/Skayo/devRant-Webhooks-Server#readme",
+  "dependencies": {
+    "cron": "^1.3.0",
+    "mysql": "^2.16.0",
+    "rantscript": "^1.4.0",
+    "request": "^2.88.0"
+  }
 }

@@ -1,0 +1,4 @@
+{
+	"getWebhooks": "SELECT * FROM drw_webhooks WHERE eventType=?",
+	"setEventData": "UPDATE drw_webhooks SET eventData=? WHERE webhookKey=?"
+}
