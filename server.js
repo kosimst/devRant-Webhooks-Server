@@ -73,10 +73,10 @@ function newCommentOnRant() {
 		} else {
 			console.log('> Done.');
 
-			for (let row of results) {
-				console.log('\n> Checking Webhook with key "' + row.webhookKey + '"...');
+			for (let webhook of results) {
+				console.log('\n> Checking Webhook with key "' + webhook.webhookKey + '"...');
 
-				let eventData = JSON.parse(row.eventData);
+				let eventData = JSON.parse(webhook.eventData);
 
 				console.log('> Fetching Rant...');
 				devRant
@@ -122,12 +122,12 @@ function newCommentOnRant() {
 							}
 
 							console.log('> Executing Webhook...');
-							executeWebhook(row, comment, function (error, response, body) {
+							executeWebhook(webhook, comment, function (error, response, body) {
 								if (error) {
 									errors.push(error);
-									console.error('! Error while executing Webhook with key "' + row.webhookKey + '": ' + error);
+									console.error('! Error while executing Webhook with key "' + webhook.webhookKey + '": ' + error);
 								} else {
-									console.log('> Webhook with key "' + row.webhookKey + '" successfully executed.');
+									console.log('> Webhook with key "' + webhook.webhookKey + '" successfully executed.');
 								}
 							});
 						}
@@ -137,7 +137,7 @@ function newCommentOnRant() {
 							eventData.lastTime = response.comments[response.comments.length - 1].created_time;
 						}
 
-						storeNewEventData(row.webhookKey, eventData);
+						storeNewEventData(webhook.webhookKey, eventData);
 						console.log('> Updated.');
 					});
 			}
@@ -150,20 +150,70 @@ function newCommentOnRant() {
 	});
 }
 
-function newWeeklyRantTopic() {
-	// Check for a new rant
-	db.query(queries.getWebhooks, 'newWeeklyRantTopic', function (error, results, fields) {
-		if (error) throw error;
-		//console.log(results);
+function newWeeklyTopic() {
+	console.log('\n> Cronjob "newWeeklyTopic" fired.');
+
+	console.log('> Fetching Webhooks with event-type "newWeeklyTopic"...');
+	db.query(queries.getWebhooks, 'newWeeklyTopic', function (error, results, fields) {
+		let errors = [];
+
+		if (error) {
+			errors.push(error);
+			console.error('! An error occurred while fetching Webhooks: ' + error);
+		} else {
+			console.log('> Done.');
+
+			for (let webhook of results) {
+				console.log('\n> Checking Webhook with key "' + webhook.webhookKey + '"...');
+
+				let eventData = JSON.parse(webhook.eventData);
+
+				console.log('> Fetching Weekly Topics list...');
+				devRant
+					.listWeekly(eventData.rantID)
+					.then((weeks) => {
+						console.log('> Done.');
+
+						console.log('> Checking for a new week...');
+						for (let week of weeks) {
+							if (week.week > eventData.lastWeekNum) {
+								console.log('> Found new week: wk' + week.week);
+
+								console.log('> Executing Webhook...');
+								executeWebhook(webhook, week, function (error, response, body) {
+									if (error) {
+										errors.push(error);
+										console.error('! Error while executing Webhook with key "' + webhook.webhookKey + '": ' + error);
+									} else {
+										console.log('> Webhook with key "' + webhook.webhookKey + '" successfully executed.');
+									}
+								});
+
+								break;
+							}
+						}
+
+						console.log('> Updating Webhook data...');
+						// This wont work here: eventData.lastWeekNum = weeks[0].week;
+						eventData = {lastWeekNum: weeks[0].week};
+
+						storeNewEventData(webhook.webhookKey, eventData);
+						console.log('> Updated.');
+					});
+			}
+		}
+
+		if (errors.length > 0) {
+			//storeNewErrors(row.webhookKey, errors);
+			console.error(errors);
+		}
 	});
 }
-
-newCommentOnRant();
 
 var cronjobs = [
 	new CronJob(config.cronjobTimes.newRant, newRant, null, true, 'America/New_York'),
 
 	new CronJob(config.cronjobTimes.newCommentOnRant, newCommentOnRant, null, true, 'America/New_York'),
 
-	new CronJob(config.cronjobTimes.newWeeklyRantTopic, newWeeklyRantTopic, null, true, 'America/New_York')
+	new CronJob(config.cronjobTimes.newWeeklyRantTopic, newWeeklyTopic, null, true, 'America/New_York')
 ];
